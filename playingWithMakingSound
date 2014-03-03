@@ -1,0 +1,54 @@
+import random
+length = 30.0
+numSamps = int(22050*length)
+numNotes = 60
+numWavesPerNote = int((length/numNotes)*440)
+sampsPerNote = numSamps/numNotes
+sampsPerWave = sampsPerNote/numWavesPerNote
+sampsPerQWave = sampsPerWave/4
+modulation = math.sqrt(32000/(numWavesPerNote*sampsPerQWave))
+
+sound = makeEmptySound(numSamps)
+SAMPS = getSamples(sound)
+""
+for i in range(numNotes):
+  rand = random.uniform(1, modulation)
+  rand2 = random.uniform(1, modulation)
+  rand3_1 = random.uniform(0.75, 0.95)
+  rand3_2 = random.uniform(0.5, 0.76)
+  rand3_3 = random.uniform(0.3, 0.65)
+  
+  for x in range(numWavesPerNote):
+    offset = (i*sampsPerNote) + (x*sampsPerWave)
+    for j in range(sampsPerQWave):
+      SAMPS[offset + (sampsPerQWave*0) + j ].value = int( j*rand*rand2*(numWavesPerNote-x) )
+    
+    for k in range(sampsPerQWave):
+      SAMPS[offset + (sampsPerQWave*1) + k ].value = int( (sampsPerQWave-k)*rand*rand2*rand3_1*(numWavesPerNote-x) )
+    
+    for n in range(sampsPerQWave):
+      SAMPS[offset + (sampsPerQWave*2) + n ].value = int( -(n*rand*rand2*rand3_2*(numWavesPerNote-x)) )
+    
+    for m in range(sampsPerQWave):
+      SAMPS[offset + (sampsPerQWave*3) + m ].value = int( -((sampsPerQWave-m)*rand*rand2*rand3_3*(numWavesPerNote-x)) )
+#for i in range(3000):
+ # printNow(str(samps[i].value)+" "+str(i))
+"""
+music is a length of time where a sound/wave/energy is 
+transmitted sinusodially (+up, +down, -up, -down) in a certain
+frequency (440 Hz, 459Hz, 512Hz, etc.), and a combination of 
+notes is where those waves either constructively or destructively
+interfere with each other
+
+4-16 notes per second
+
+while loop that steps forward per note
+passing variable of last made sample
+"""
+play(sound)
+stop = raw_input("Stop? ")
+if stop == "":
+  stopPlaying(sound)
+
+writeSoundTo(sound, "/Users/peterwalker/Desktop/test.wav")
+""

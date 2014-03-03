@@ -1,0 +1,86 @@
+def go():
+    import random
+    import math
+
+    ## Change to alter length of sound
+    length = int(raw_input("Please specify, in seconds, how long you want your song to be: "))
+    rate = 44100
+    totalSamples = rate*length
+    notesPerSecond = float(raw_input("Please specify how many notes per second you want played (recommend 4 -> 10): "))
+    sampsPerNote = int( rate*(1/notesPerSecond) )
+    
+    sound = makeEmptySound(totalSamples, rate)
+    SAMPS = getSamples(sound)
+
+    ## Making array of note frequencies based on piano key number (left to right, 0 to 88)
+    ## The resulting frequencies are between 27.5 and 4186.01 Hz
+    daNotes = {}
+    for i in range(1,89):
+        base = pow(2, (1.0/12))
+        power = i-49
+        freq = pow(base, power) * 440.0
+        daNotes[i] = freq
+
+    ## This is where the sound starts (sample 0)
+    lastIndex = 0
+    
+    ## While looping through the sound by lengths of notes
+    ## Last index is increased at the end of the while
+    while lastIndex<(totalSamples-(sampsPerNote*2)):
+        ## Setting the lowest and highest notes based on piano key number
+        ## Then getting the note that will be played
+        noteLow = 36#1
+        noteHigh = 60#88
+        noteFreq = daNotes[random.randint(noteLow,noteHigh)]
+        
+        ## Splitting up the samples into sections of how
+        ## many waves per note, samples per wave, and sample per
+        ## quarter wave
+        numWavesPerNote = int( (1/notesPerSecond)*noteFreq )
+        sampsPerWave = sampsPerNote/numWavesPerNote
+        sampsPerQWave = sampsPerWave/4
+        value = float(random.randint(10000,14000)) / sampsPerQWave
+    
+        for x in range(numWavesPerNote):
+            ## Offset keeps track of which wave we are at
+            offset = lastIndex + (x*sampsPerWave)
+            
+            ## ModValue is what is used to create the disipating wave form
+            modValue = value * (pow((0.75), x) + 0.2)
+            for j in range(sampsPerQWave):
+                SAMPS[offset + (sampsPerQWave*0) + j ].value = int(modValue * j)
+            for k in range(sampsPerQWave):
+                SAMPS[offset + (sampsPerQWave*1) + k ].value = int(modValue * (sampsPerQWave-k))
+            for m in range(sampsPerQWave):
+                SAMPS[offset + (sampsPerQWave*2) + m ].value = int(-1 * modValue * m)
+            for n in range(sampsPerQWave):
+                SAMPS[offset + (sampsPerQWave*3) + n ].value = int(-1 * modValue * (sampsPerQWave-n))
+    
+        lastIndex += sampsPerNote
+
+
+
+
+    """
+    music is a length of time where a sound/wave/energy is 
+    transmitted sinusodially (+up, +down, -up, -down) in a certain
+    frequency (440 Hz, 459Hz, 512Hz, etc.), and a combination of 
+    notes is where those waves either constructively or destructively
+    interfere with each other
+
+    4-16 notes per second
+
+    while loop that steps forward per note
+    passing variable of last made sample
+    """
+
+
+
+    play(sound)
+    stop = raw_input("Press Enter to Stop. ")
+    if stop=="" or stop!="":
+        stopPlaying(sound)
+
+    file = raw_input("Enter filename... ")
+    if file!="":
+        writeSoundTo(sound, "/Users/peterwalker/Desktop/"+file+".wav")

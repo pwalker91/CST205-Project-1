@@ -1,0 +1,41 @@
+def p():
+  s = false
+  d = 100
+  i = 64
+  f = -20
+  while not s:
+    playNote(61+f,d,i)
+    playNote(64+f,d,i)
+    playNote(60+f,d,i)
+    playNote(53+f,d,i)
+    playNote(56+f,d,i)
+    playNote(59+f,d,i)
+    playNote(60+f,d,i)
+    playNote(57+f,d,i)
+    playNote(56+f,d,i)
+    playNote(62+f,d,i)
+    playNote(60+f,d,i)
+    playNote(65+f,d,i)
+    f+=2
+    if d>10:
+      d-=10
+    if (raw_input("--- ") <> ""):
+      s = true
+
+def s():
+  import random
+  path = pickAFile()
+  sound = makeSound(path)
+  printNow(sound)
+  #play(sound)
+  #stopPlaying(sound)
+  
+  samps = sound.getSamples()
+  for i in range(getNumSamples(sound)):
+    if samps[i].value>1000:
+      samps[i].value+=random.randint(-1, 1)*random.randint(0, 10000)
+  
+  writeSoundTo(sound, "/Users/peterwalker/Desktop/asdf.wav")
+
+
+

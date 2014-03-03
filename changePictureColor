@@ -1,0 +1,64 @@
+
+# # # # # # # # # # # # # # # # # # # # # #
+# This program takes a picture, and does
+# some funky math to it's pixels.
+# It flips the red, green, and blue values,
+# as well as adds a random value to it
+#
+# AUTHOR: Peter Walker
+# DATE: 1/29/14
+# # # # # # # # # # # # # # # # # # # # # #
+import random
+
+def changeImage():
+  path = pickAFile()
+  pic = makePicture(path)
+  
+  #show(pic)
+  pixels = getAllPixels(pic)
+  printNow("Altering image colors")
+  
+  for pix in pixels:
+    #the random int creates images that seem to have "noise"
+    red = pix.getRed() +random.randint(0,256)
+    if red>255:
+      red-=128
+    blue = pix.getBlue() +random.randint(0,256)
+    if blue>255:
+      blue-=128
+    green = pix.getGreen() +random.randint(0,256)
+    if green>255:
+      green-=128
+    
+    pix.setBlue(green)
+    pix.setRed(blue)
+    pix.setGreen(red)
+    
+  printNow("Done altering image")
+  
+  newpath = path[:-4]+"_new_"
+  newpathnum = 1
+  newpathtext = path[-4:]
+  finding = true
+  while (finding):
+    try:
+      test = makePicture(newpath+str(newpathnum)+newpathtext)
+      if (test):
+        newpathnum+=1
+    except:
+      finding=false
+  newpath = newpath+str(newpathnum)+newpathtext
+  writePictureTo(pic, newpath)
+  
+# # # # # # # # # # # # # # # # # # # # # # # #
+"""
+try:
+  test = makePicture(raw_input())
+  printNow(test)
+except:
+  printNow("Didn't Work")
+"""
+  
+changeImage()
+
+
